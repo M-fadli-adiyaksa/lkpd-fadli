@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak Angka</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: red;
+        }
+        #riwayat {
+            margin-top: 20px;
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Game Tebak Angka</h2>
+
+    <label>Nama Anda:</label>
+    <input type="text" id="nama" placeholder="Masukkan nama">
+
+    <label>Tebak angka (1-10):</label>
+    <input type="number" id="tebakan" min="1" max="10">
+
+    <button onclick="tebak()">Tebak</button>
+
+    <p id="hasil"></p>
+
+    <h3>Riwayat Permainan</h3>
+    <div id="riwayat"></div>
+</div>
+
+<script>
+    let angkaRandom = Math.floor(Math.random() * 10) + 1;
+
+    function tebak() {
+        let nama = document.getElementById("nama").value;
+        let tebakan = document.getElementById("tebakan").value;
+        let hasil = document.getElementById("hasil");
+
+        if (nama === "" || tebakan === "") {
+            hasil.innerHTML = "Nama dan tebakan tidak boleh kosong!";
+            return;
+        }
+
+        if (tebakan == angkaRandom) {
+            hasil.innerHTML = "🎉 Benar! Angkanya adalah " + angkaRandom;
+
+            simpanData(nama, "Benar");
+            angkaRandom = Math.floor(Math.random() * 10) + 1; // reset angka
+        } else {
+            hasil.innerHTML = "❌ Salah! Coba lagi.";
+            simpanData(nama, "Salah");
+        }
+
+        tampilkanRiwayat();
+    }
+
+    function simpanData(nama, status) {
+        let data = JSON.parse(localStorage.getItem("riwayatTebakan")) || [];
+
+        data.push({
+            nama: nama,
+            hasil: status,
+            waktu: new Date().toLocaleString()
+        });
+
+        localStorage.setItem("riwayatTebakan", JSON.stringify(data));
+    }
+
+    function tampilkanRiwayat() {
+        let data = JSON.parse(localStorage.getItem("riwayatTebakan")) || [];
+        let box = document.getElementById("riwayat");
+
+        let teks = "";
+        data.forEach(item => {
+            teks += `<p><strong>${item.nama}</strong> - ${item.hasil} (${item.waktu})</p>`;
+        });
+
+        box.innerHTML = teks;
+    }
+
+    tampilkanRiwayat();
+</script>
+
+</body>
+</html>
